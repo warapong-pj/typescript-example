@@ -1,0 +1,162 @@
+version: '3'
+
+services:
+#   kafka1:
+#     image: confluentinc/cp-kafka:7.6.0
+#     environment:
+#       KAFKA_NODE_ID: 1
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT'
+#       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka1:19092'
+#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+#       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#       # KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+#       # KAFKA_JMX_PORT: 9101
+#       # KAFKA_JMX_HOSTNAME: localhost
+#       KAFKA_PROCESS_ROLES: 'broker,controller'
+#       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:29093,3@kafka3:39093'
+#       KAFKA_LISTENERS: 'CONTROLLER://kafka1:19093,PLAINTEXT://0.0.0.0:19092'
+#       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+#       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+#       # KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+#       # Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid"
+#       # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
+#       CLUSTER_ID: '${CLUSTER_ID}'
+#     ports:
+#       - 19092:19092
+
+#   kafka2:
+#     image: confluentinc/cp-kafka:7.6.0
+#     environment:
+#       KAFKA_NODE_ID: 2
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+#       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka2:29092'
+#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+#       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#       # KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+#       # KAFKA_JMX_PORT: 9101
+#       # KAFKA_JMX_HOSTNAME: localhost
+#       KAFKA_PROCESS_ROLES: 'broker,controller'
+#       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:29093,3@kafka3:39093'
+#       KAFKA_LISTENERS: 'CONTROLLER://kafka2:29093,PLAINTEXT://0.0.0.0:29092'
+#       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+#       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+#       # KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+#       # Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid"
+#       # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
+#       CLUSTER_ID: '${CLUSTER_ID}'
+#     ports:
+#       - 29092:29092
+
+#   kafka3:
+#     image: confluentinc/cp-kafka:7.6.0
+#     environment:
+#       KAFKA_NODE_ID: 3
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+#       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka3:39092'
+#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+#       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#       # KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+#       # KAFKA_JMX_PORT: 9101
+#       # KAFKA_JMX_HOSTNAME: localhost
+#       KAFKA_PROCESS_ROLES: 'broker,controller'
+#       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:29093,3@kafka3:39093'
+#       KAFKA_LISTENERS: 'CONTROLLER://kafka3:39093,PLAINTEXT://0.0.0.0:39092'
+#       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+#       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+#       # KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+#       # Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid"
+#       # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
+#       CLUSTER_ID: '${CLUSTER_ID}'
+#     ports:
+#       - 39092:39092
+
+  redpanda1:
+    image: redpandadata/redpanda:v23.3.5
+    command:
+      - redpanda
+      - start
+      - --smp 1
+      - --memory 1G
+      - --reserve-memory 0M
+      - --node-id 1
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda1:9092,external://localhost:19092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr internal://redpanda1:8082,external://localhost:18082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr redpanda1:33145
+      - --advertise-rpc-addr redpanda1:33145
+      - --default-log-level=info
+    ports:
+      - 19092:19092
+      - 18081:18081
+      - 18082:18082
+      - 19644:19644
+
+  redpanda2:
+    image: redpandadata/redpanda:v23.3.5
+    command:
+      - redpanda
+      - start
+      - --smp 1
+      - --memory 1G
+      - --reserve-memory 0M
+      - --node-id 2
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:29092
+      - --advertise-kafka-addr internal://redpanda2:9092,external://localhost:29092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:28082
+      - --advertise-pandaproxy-addr internal://redpanda2:8082,external://localhost:28082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:28081
+      - --rpc-addr redpanda2:33145
+      - --advertise-rpc-addr redpanda2:33145
+      - --default-log-level=info
+    ports:
+      - 29092:29092
+      - 28081:28081
+      - 28082:28082
+      - 29644:29644
+
+  redpanda3:
+    image: redpandadata/redpanda:v23.3.5
+    command:
+      - redpanda
+      - start
+      - --smp 1
+      - --memory 1G
+      - --reserve-memory 0M
+      - --node-id 3
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:39092
+      - --advertise-kafka-addr internal://redpanda3:9092,external://localhost:39092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:38082
+      - --advertise-pandaproxy-addr internal://redpanda3:8082,external://localhost:38082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:38081
+      - --rpc-addr redpanda3:33145
+      - --advertise-rpc-addr redpanda3:33145
+      - --default-log-level=info
+    ports:
+      - 39092:39092
+      - 38081:38081
+      - 38082:38082
+      - 39644:39644
+
+  # redpanda-console:
+  #   image: redpandadata/console:v2.4.3
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     CONFIG_FILEPATH: /tmp/config.yml
+  #     CONSOLE_CONFIG_FILE: |
+  #       kafka:
+  #         brokers: ["redpanda1:9092", "redpanda2:9092", "redpanda3:9092"]
+  #         schemaRegistry:
+  #           enabled: true
+  #           urls: ["http://redpanda1:8081"]
+  #       redpanda:
+  #         adminApi:
+  #           enabled: true
+  #           urls: ["http://redpanda1:9644"]
+  #   entrypoint: /bin/sh
+  #   command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
