@@ -1,29 +1,63 @@
-import { PrismaClient  } from "@prisma/client";
-import { title } from "process";
+import { Prisma, PrismaClient  } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 const main = async () => {
-    await prisma.user.create({
-        data: {
-            name: 'Alice',
-            email: 'alice@prisma.io',
+    let incloudePost: boolean = false;
+    let user: Prisma.UserCreateInput;
+
+    if (incloudePost) {
+        user = {
+            email: 'elsa@prisma.io',
+            name: 'Elsa Prisma',
             posts: {
-                create: { title: 'Hello World' },
-            },
-            profile: {
-                create: { bio: 'I like turtles' },
+                create: {
+                    title: 'Include this post',
+                }
             }
         }
-    })
-
-    const allUsers = await prisma.user.findMany({
-        include: {
-            posts: true,
-            profile: true,
+    } else {
+        user = {
+            email: 'elsa@prisma.io',
+            name: 'Elsa Prisma',
         }
-    });
-    console.dir(allUsers, { depth: null });
+    }
+    const createUser = await prisma.user.create({ data: user })
+
+    // const createMany = await prisma.user.createMany({
+    //     data: [
+    //       { name: 'Bob', email: 'bob@prisma.io' },
+    //       { name: 'Yewande', email: 'yewande@prisma.io' },
+    //       { name: 'Angelique', email: 'angelique@prisma.io' },
+    //     ],
+    //     skipDuplicates: false,
+    // });
+
+    // const users = await prisma.user.findMany();
+    // console.log(users);
+
+    // const user = await prisma.user.findUnique({
+    //     where: {
+    //         email: 'bob@prisma.io',
+    //     }
+    // });
+
+    // const user = await prisma.user.update({
+    //     where: {
+    //         email: 'bob@prisma.io'
+    //     },
+    //     data: {
+    //         name: 'BoBo'
+    //     }
+    // });
+
+    // const user = await prisma.user.delete({
+    //     where: {
+    //         email: 'bob@prisma.io'
+    //     }
+    // })
+
+    // console.log(user);
 }
 
 main()
