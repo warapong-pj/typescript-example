@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  # redis:
+  #   image: redis/redis-stack:7.2.0-v10
+  #   ports:
+  #     - 6379:6379
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.17.1
+    ulimits:
+      memlock: -1
+    ports:
+      - 6379:6379
+    command: sh -c "/usr/local/bin/dragonfly --logtostderr --requirepass password --proactor_threads=1 --maxmemory=2gb"
